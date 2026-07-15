@@ -1,0 +1,45 @@
+site_name: figmint
+site_description: Direct-manipulation figure editor for matplotlib
+site_url: https://wsiyal.github.io/figmint
+repo_url: https://github.com/wsiyal/figmint
+repo_name: wsiyal/figmint
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+
+nav:
+  - Home: index.md
+  # Fable: add as features land —
+  # - Quickstart: quickstart.md
+  # - Inset zoom: features/inset-zoom.md
+  # - Subplots: features/subplots.md
+  # - Beautify: features/beautify.md
+  # - Notebook vs script: guide/environments.md
+  # - API reference: api.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
