@@ -7,7 +7,7 @@ PLACEHOLDER package. The real implementation is built by Fable per the repositor
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -16,7 +16,7 @@ __all__ = ["edit", "__version__"]
 __version__ = "0.1.0"
 
 
-def edit(fig: "Figure", block: Optional[bool] = None) -> "Figure":
+def edit(fig: Figure, block: bool | None = None) -> Figure:
     """Open the figure editor for ``fig`` and return it once the window closes.
 
     Args:
