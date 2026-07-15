@@ -1,5 +1,9 @@
 # figmint
 
+[![CI](https://github.com/wsiyal/figmint/actions/workflows/ci.yml/badge.svg)](https://github.com/wsiyal/figmint/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
+
 **Direct-manipulation figure editor for matplotlib.** Open any matplotlib figure in a real
 GUI, drag things where you want them, edit legends / markers / colors, drop in a
 **zoom inset** by dragging a box, rearrange **subplots**, hit **Beautify** for a
