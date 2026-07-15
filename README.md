@@ -5,10 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 
 **Direct-manipulation figure editor for matplotlib.** Open any matplotlib figure in a real
-GUI, drag things where you want them, edit legends / markers / colors, drop in a
-**zoom inset** by dragging a box, rearrange **subplots**, hit **Beautify** for a
-publication look — then export a PNG/PDF/SVG *or* a clean standalone matplotlib script.
-figmint never edits your source file.
+GUI, click to select elements, edit their properties, drag text around, and export a
+PNG/PDF/SVG *or* a clean standalone matplotlib script. figmint never edits your source file.
 
 ```python
 import matplotlib.pyplot as plt
@@ -21,26 +19,34 @@ ax.legend()
 edit(fig)   # opens the editor — blocks in scripts, non-blocking in Jupyter
 ```
 
-> **Status: in active development (pre-release).** The design and full
-> development→deployment plan live in [`IMPLEMENTATION_SPEC.md`](IMPLEMENTATION_SPEC.md).
-> Not yet on PyPI.
+> **Status: early release (v0.1.0).** The core editor works today (see "Available now").
+> The flagship tools — inset-zoom, subplot layout, and one-click Beautify — are on the
+> near-term roadmap. Full design lives in [`IMPLEMENTATION_SPEC.md`](IMPLEMENTATION_SPEC.md).
 
-## Why figmint
+## Available now (v0.1.0)
 
-- **A real inset-zoom tool** — drag a region, get a magnified inset with connector lines.
+- **Click-to-select** any element (lines, text, title, labels, legend) with a highlight.
+- **Property panel** — edit text (content, font size, color) and lines (width, style,
+  marker, marker size, color); every change is **undoable**.
+- **Drag** text annotations; **delete** elements; full **undo/redo**.
+- **Export** — PNG/PDF/SVG at any DPI, a standalone matplotlib **`.py` script**, and a
+  reloadable **`.figmint` project** file.
+- **Non-intrusive** — your source file is never modified.
+- **Works in scripts and Jupyter**; **dark/light** theme; high-DPI aware.
+
+## On the roadmap
+
+- **Inset-zoom tool** — drag a region, get a magnified inset with connector lines.
 - **Visual subplot/layout editing** — add, remove, rearrange panels; tune spacing.
 - **One-click Beautify** — curated publication presets, tight layout, font harmonizing.
-- **Non-intrusive** — your script is never modified; export plain matplotlib code instead.
-- **Works in notebooks and scripts** — correct event-loop handling for both.
-- **Modern UX** — dark/light theme, high-DPI aware, undo/redo everywhere.
+- Annotation tools (arrows, shapes, LaTeX), richer legend/axes editing.
 
 ## Install
 
 ```bash
-# once released:
 pip install figmint
 
-# for now, from source:
+# or from source:
 git clone https://github.com/wsiyal/figmint
 cd figmint
 pip install -e ".[dev]"

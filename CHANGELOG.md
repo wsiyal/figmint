@@ -4,6 +4,8 @@ All notable changes to figmint are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org).
 
 ## [Unreleased]
+
+## [0.1.0] - 2026-07-16
 ### Added
 - Project scaffold: packaging (`pyproject.toml`), CI/release/docs workflows, license,
   docs skeleton, and smoke tests.
