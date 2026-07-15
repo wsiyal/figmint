@@ -1,19 +1,31 @@
-"""Command-line entry point for figmint (``figmint`` console script).
-
-PLACEHOLDER. Fable implements per IMPLEMENTATION_SPEC.md — e.g. ``figmint demo`` should
-open a sample figure in the editor.
-"""
+"""Command-line entry point: ``figmint demo`` opens a sample figure in the editor."""
 
 from __future__ import annotations
 
 import sys
 
 
+def _demo() -> int:
+    import matplotlib.pyplot as plt
+
+    from figmint import edit
+
+    fig, ax = plt.subplots()
+    ax.plot([0, 1, 2, 3], [0, 1, 4, 9], marker="o", label="sample")
+    ax.set_title("figmint demo")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.legend()
+    edit(fig)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Entry point for the ``figmint`` console script."""
     args = sys.argv[1:] if argv is None else argv
-    print("figmint CLI is not implemented yet. See IMPLEMENTATION_SPEC.md.")
-    print(f"(received args: {args})")
+    if args and args[0] == "demo":
+        return _demo()
+    print("figmint — usage: figmint demo")
     return 0
 
 
