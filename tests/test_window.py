@@ -64,3 +64,47 @@ def test_export_code_and_project(qtbot, tmp_path) -> None:
 
     proj = win.save_project_to(tmp_path / "out.figmint")
     assert '"schema": 1' in proj.read_text(encoding="utf-8")
+
+
+def test_select_updates_panel_and_enables_delete(qtbot) -> None:
+    fig = _figure()
+    win = EditorWindow(fig)
+    qtbot.addWidget(win)
+    line = fig.axes[0].lines[0]
+
+    win.select(line)
+    assert win.selection.current is line
+    assert win._delete_act.isEnabled()
+    assert win.panel._artist is line
+
+
+def test_delete_selection_via_command(qtbot) -> None:
+    fig = _figure()
+    win = EditorWindow(fig)
+    qtbot.addWidget(win)
+    line = fig.axes[0].lines[0]
+
+    win.select(line)
+    win._on_delete()
+    assert line.get_visible() is False
+    assert not win.selection.has_selection
+    assert win.stack.can_undo
+
+    win.stack.undo()
+    assert line.get_visible() is True
+
+
+def test_hit_test_finds_line(qtbot) -> None:
+    fig = _figure()
+    win = EditorWindow(fig)
+    qtbot.addWidget(win)
+    win.canvas.draw()
+
+    from matplotlib.backend_bases import MouseEvent
+
+    ax = fig.axes[0]
+    line = ax.lines[0]
+    # A data point that lies on the plotted line ([0,1,2] -> [0,1,4]): (1, 1).
+    px, py = ax.transData.transform((1, 1))
+    event = MouseEvent("button_press_event", win.canvas, px, py, button=1)
+    assert win.canvas.hit_test(event) is line

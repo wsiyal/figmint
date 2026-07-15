@@ -19,5 +19,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [S
   - `figmint demo` CLI opens a sample figure.
   - 26 tests (logic + headless Qt window smoke tests).
 
-<!-- Fable: next milestones — M2 select/drag + property panel; M3 annotations;
+- **M2 interactive editing:**
+  - Click-to-select any artist (line, text, title, labels, legend, patches) with a
+    Qt-overlay selection highlight (never appears in exports).
+  - Context-sensitive property panel (dock): edit text (string, font size, color) and
+    line (width, style, marker, marker size, color) — every change is undoable.
+  - Drag-to-move free text annotations; delete selected artist; all through the command
+    stack so undo/redo and code export stay consistent.
+  - Artist→code-reference resolver so generated scripts use real matplotlib paths
+    (`ax.lines[0]`, `ax.title`, …).
+
+<!-- Fable: next milestones — M3 annotations (text/arrow/shapes/LaTeX);
      M4 inset zoom / subplots / beautify. -->

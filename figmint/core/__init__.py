@@ -6,8 +6,20 @@ Everything the user does is a :class:`~figmint.core.commands.Command`. A single
 code generation and project save/load.
 """
 
-from figmint.core.commands import Command, SetArtistPropCommand
+from figmint.core.commands import (
+    Command,
+    DeleteArtistCommand,
+    MoveTextCommand,
+    SetArtistPropCommand,
+)
 from figmint.core.editlog import EditLog
 from figmint.core.history import CommandStack
 
-__all__ = ["Command", "SetArtistPropCommand", "EditLog", "CommandStack"]
+__all__ = [
+    "Command",
+    "SetArtistPropCommand",
+    "MoveTextCommand",
+    "DeleteArtistCommand",
+    "EditLog",
+    "CommandStack",
+]

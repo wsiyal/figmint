@@ -1,23 +1,29 @@
-"""The figmint editor main window (M1).
+"""The figmint editor main window.
 
-Embeds the figure, provides a menu/toolbar, undo-redo wiring, theme switching, and
-export (image / Python script / project). Interactive selection, property editing, and
-the flagship tools (inset zoom, subplots, beautify) are added by later milestones on top
-of this scaffold.
+M1 gave the shell (embedded figure, toolbar, theme, export). M2 adds interactive editing:
+click-to-select, a context-sensitive property panel, drag-to-move free text, delete, and
+undo/redo across all of it. The flagship tools (inset zoom, subplots, beautify) build on
+this in later milestones.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import matplotlib
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.figure import Figure
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 
+from figmint.core.commands import DeleteArtistCommand, MoveTextCommand
 from figmint.core.history import CommandStack
-from figmint.io.export_image import SUPPORTED_FORMATS, export_figure
+from figmint.io.export_image import export_figure
+from figmint.model.artref import artist_ref, describe_artist
+from figmint.model.selection import SelectionModel
+from figmint.panels.properties import PropertyPanel
 from figmint.view.canvas import FigmintCanvas
 from figmint.view.theme import Theme, stylesheet
 
@@ -30,13 +36,19 @@ class EditorWindow(QMainWindow):
         self._figure = figure
         self._theme: Theme = theme
         self.stack = CommandStack(on_change=self._on_stack_change)
+        self.selection = SelectionModel(on_change=self._on_selection_change)
 
         self.setWindowTitle("figmint")
-        self.resize(900, 640)
+        self.resize(1000, 680)
 
         self.canvas = FigmintCanvas(figure)
+        self.canvas.on_select = self._on_canvas_select
+        self.canvas.on_move = self._on_canvas_move
         self.setCentralWidget(self.canvas)
         self.addToolBar(NavigationToolbar2QT(self.canvas, self))
+
+        self.panel = PropertyPanel(self.stack)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.panel)
 
         self._build_menus()
         self.statusBar().showMessage("Ready")
@@ -74,11 +86,17 @@ class EditorWindow(QMainWindow):
         self._redo_act.setShortcut(QKeySequence.StandardKey.Redo)
         self._redo_act.triggered.connect(self._on_redo)
         edit_menu.addAction(self._redo_act)
+        edit_menu.addSeparator()
+        self._delete_act = QAction("&Delete selection", self)
+        self._delete_act.setShortcut(QKeySequence.StandardKey.Delete)
+        self._delete_act.triggered.connect(self._on_delete)
+        edit_menu.addAction(self._delete_act)
 
         view_menu = menubar.addMenu("&View")
         theme_act = QAction("Toggle dark/light theme", self)
         theme_act.triggered.connect(self.toggle_theme)
         view_menu.addAction(theme_act)
+        view_menu.addAction(self.panel.toggleViewAction())
 
     # ---- theme -------------------------------------------------------------
     @property
@@ -94,6 +112,35 @@ class EditorWindow(QMainWindow):
         """Switch between dark and light."""
         self.apply_theme("dark" if self._theme == "light" else "light")
 
+    # ---- selection ---------------------------------------------------------
+    def select(self, artist: Any | None) -> None:
+        """Select ``artist`` programmatically (also the entry point for canvas clicks)."""
+        self.selection.select(artist)
+
+    def _on_canvas_select(self, artist: Any | None) -> None:
+        self.selection.select(artist)
+
+    def _on_canvas_move(
+        self, artist: Any, old: tuple[float, float], new: tuple[float, float]
+    ) -> None:
+        self.stack.push(MoveTextCommand(artist, new, artist_ref(artist), old_pos=old))
+
+    def _on_selection_change(self, artist: Any | None) -> None:
+        self.canvas.set_selected(artist)
+        self.panel.set_target(artist)
+        self._delete_act.setEnabled(artist is not None)
+        if artist is None:
+            self.statusBar().showMessage("Ready")
+        else:
+            self.statusBar().showMessage(f"Selected: {describe_artist(artist)}")
+
+    def _on_delete(self) -> None:
+        artist = self.selection.current
+        if artist is None:
+            return
+        self.stack.push(DeleteArtistCommand(artist, artist_ref(artist)))
+        self.selection.clear()
+
     # ---- undo/redo ---------------------------------------------------------
     def _on_undo(self) -> None:
         self.stack.undo()
@@ -108,6 +155,7 @@ class EditorWindow(QMainWindow):
     def _update_edit_actions(self) -> None:
         self._undo_act.setEnabled(self.stack.can_undo)
         self._redo_act.setEnabled(self.stack.can_redo)
+        self._delete_act.setEnabled(self.selection.has_selection)
 
     # ---- export (direct, dialog-free: used by tests and the dialogs) -------
     def export_image_to(self, path: str | Path, *, dpi: int = 300) -> Path:
@@ -158,4 +206,4 @@ class EditorWindow(QMainWindow):
         self.statusBar().showMessage(f"Saved {path}")
 
 
-__all__ = ["EditorWindow", "SUPPORTED_FORMATS"]
+__all__ = ["EditorWindow"]
