@@ -53,6 +53,11 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.10"
 warn_unused_ignores = true
+# Type-check figmint's own code only; don't report errors inside third-party
+# libraries (matplotlib/numpy) when following their imports. Keeps CI deterministic
+# across Python/numpy versions. Fable can tighten per-module later.
+ignore_missing_imports = true
+follow_imports = "silent"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
